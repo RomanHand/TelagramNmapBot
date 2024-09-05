@@ -1,4 +1,4 @@
-FROM golang:1.23.0 AS builder
+FROM golang:1.22.6 AS builder
 
 WORKDIR /app
 
@@ -9,8 +9,9 @@ COPY . .
 
 RUN go build -o tg-nmap-bot .
 
-FROM alpine:3.20.2
-RUN apk --no-cache add ca-certificates nmap
+FROM debian:12.7
+
+RUN apt update && apt install ca-certificates nmap -y
 
 COPY --from=builder /app/tg-nmap-bot /usr/local/bin/tg-nmap-bot
 COPY --from=builder /app/config.yml /etc/tg-nmap-bot/config.yml

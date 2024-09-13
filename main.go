@@ -12,7 +12,6 @@ import (
 )
 
 type Config struct {
-	Token      string `yaml:"token" validate:"required"`
 	WelcomeMsg string `yaml:"welcome_msg" default:"Welcome! Please enter a domain or IP address to scan."`
 }
 
@@ -38,7 +37,6 @@ func loadConfig(filename string) (Config, error) {
 func setupLogging() {
 	log.SetOutput(os.Stdout)
 	log.Println("Logging started")
-	
 }
 
 func main() {
@@ -49,8 +47,13 @@ func main() {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
+	token := os.Getenv("NMAP_TELEGRAM_BOT_TOKEN")
+	if token == "" {
+		log.Fatal("NMAP_TELEGRAM_BOT_TOKEN environment variable is not set")
+	}
+
 	pref := tele.Settings{
-		Token:  cfg.Token,
+		Token:  token,
 		Poller: &tele.LongPoller{Timeout: 10 * time.Second},
 		OnError: func(e error, c tele.Context) {
 			log.Println("Error:", e)
@@ -70,7 +73,7 @@ func main() {
 
 	b.Handle("/help", func(c tele.Context) error {
 		userStates[c.Chat().ID] = "waiting_for_target"
-		log.Printf("User %d enter help command", c.Chat().ID)
+		log.Printf("User %d entered help command", c.Chat().ID)
 		return c.Send("Тут это, короче, могу только морально поддрежать. А вообще тыка на клавиатуре /start , а после по подсказкам.")
 	})
 

@@ -11,6 +11,8 @@ RUN go build -o tg-nmap-bot .
 
 FROM debian:12.7
 
+EXPOSE 12345
+
 RUN apt update && apt install ca-certificates nmap -y
 
 COPY --from=builder /app/tg-nmap-bot /usr/local/bin/tg-nmap-bot

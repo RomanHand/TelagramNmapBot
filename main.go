@@ -67,13 +67,13 @@ func main() {
 
 	b.Handle("/start", func(c tele.Context) error {
 		userStates[c.Chat().ID] = "waiting_for_target"
-		log.Printf("User %d started interaction with the bot", c.Chat().ID)
+		log.Printf("User %d (username: %s) started interaction with the bot", c.Chat().ID, c.Chat().Username)
 		return c.Send(cfg.WelcomeMsg)
 	})
 
 	b.Handle("/help", func(c tele.Context) error {
 		userStates[c.Chat().ID] = "waiting_for_target"
-		log.Printf("User %d entered help command", c.Chat().ID)
+		log.Printf("User %d (username: %s) entered help command", c.Chat().ID, c.Chat().Username)
 		return c.Send("Тут это, короче, могу только морально поддрежать. А вообще тыка на клавиатуре /start , а после по подсказкам.")
 	})
 
@@ -87,7 +87,7 @@ func main() {
 		case "waiting_for_target":
 			userTargets[c.Chat().ID] = c.Text()
 			userStates[c.Chat().ID] = "waiting_for_ports"
-			log.Printf("User %d entered target address: %s", c.Chat().ID, c.Text())
+			log.Printf("User %d (username: %s) entered target address: %s ", c.Chat().ID, c.Chat().Username, c.Text())
 			return c.Send("Введите диапазон портов для сканирования (например, 1-100):")
 
 		case "waiting_for_ports":
@@ -104,7 +104,7 @@ func main() {
 
 			finishMsg := "Сканирование завершено:\n" + output
 			userStates[c.Chat().ID] = "waiting_for_target"
-			log.Printf("Scan completed for user %d", c.Chat().ID)
+			log.Printf("Scan completed for user %d (username: %s)", c.Chat().ID, c.Chat().Username)
 			return c.Send(finishMsg)
 
 		default:
